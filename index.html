@@ -13,7 +13,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
 <style>
 /* ═══════════════════════════════════════════════════════════════
@@ -58,8 +58,15 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 
+/* Scroll Progress */
+.scroll-progress { position: fixed; top: 0; left: 0; height: 3px; z-index: 1000; background: linear-gradient(90deg, var(--plum), var(--rose)); width: 0%; transition: width 0.1s linear; }
+
+/* Cursor Glow */
+.cursor-glow { position: fixed; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(61,31,62,0.04) 0%, transparent 70%); pointer-events: none; z-index: 0; transform: translate(-50%,-50%); }
+[data-theme="dark"] .cursor-glow { background: radial-gradient(circle, rgba(212,160,216,0.05) 0%, transparent 70%); }
+
 body {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Inter', -apple-system, sans-serif;
   background: var(--bg);
   color: var(--text);
   line-height: 1.7;
@@ -121,9 +128,14 @@ body {
 .navbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   background: var(--glass);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4);
   border-bottom: 1px solid var(--border);
-  transition: background 0.3s;
+  transition: all 0.35s;
+}
+.navbar.scrolled { box-shadow: 0 2px 12px rgba(61,31,62,0.06); }
+.social-icon svg, .ci-icon svg, .edu-icon svg, .skill-icon svg, .wid-icon svg {
+  width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
 }
 .nav-inner {
   max-width: 1200px; margin: 0 auto;
@@ -135,16 +147,21 @@ body {
 .brand-sub { font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); display: block; }
 .nav-links { display: flex; align-items: center; gap: 0.25rem; }
 .nav-link {
-  background: none; border: none; color: var(--text-secondary); font-family: 'Source Sans 3', sans-serif;
-  font-size: 0.85rem; padding: 0.4rem 0.75rem; cursor: pointer; border-radius: 6px;
-  transition: all 0.25s; text-decoration: none;
+  background: none; border: none; color: var(--text-secondary); font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.82rem; padding: 0.4rem 0.7rem; cursor: pointer; border-radius: 6px;
+  transition: all 0.25s; text-decoration: none; position: relative; font-weight: 450;
 }
-.nav-link:hover, .nav-link.active { color: var(--plum); background: var(--bg-alt); }
+.nav-link::after {
+  content: ''; position: absolute; bottom: 2px; left: 50%; width: 0; height: 1.5px;
+  background: var(--plum); transition: all 0.3s var(--ease, cubic-bezier(0.16,1,0.3,1)); transform: translateX(-50%);
+}
+.nav-link:hover::after, .nav-link.active::after { width: 60%; }
+.nav-link:hover, .nav-link.active { color: var(--plum); background: transparent; }
 .nav-link.active { font-weight: 600; }
 .nav-cta {
   background: var(--plum); color: #fff; border: none; padding: 0.5rem 1.25rem;
   border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Inter', -apple-system, sans-serif;
   transition: all 0.3s; margin-left: 0.5rem; text-decoration: none;
 }
 .nav-cta:hover { opacity: 0.9; transform: translateY(-1px); }
@@ -181,14 +198,14 @@ body {
 .btn-primary {
   background: var(--plum); color: #fff; border: none; padding: 0.75rem 1.75rem;
   border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer;
-  font-family: 'Source Sans 3', sans-serif; transition: all 0.3s;
+  font-family: 'Inter', -apple-system, sans-serif; transition: all 0.3s;
   display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;
 }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(61,31,62,0.25); }
 .btn-secondary {
   background: transparent; border: 1.5px solid var(--plum); color: var(--plum);
   padding: 0.75rem 1.75rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem;
-  cursor: pointer; font-family: 'Source Sans 3', sans-serif; transition: all 0.3s;
+  cursor: pointer; font-family: 'Inter', -apple-system, sans-serif; transition: all 0.3s;
   display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;
 }
 .btn-secondary:hover { background: var(--plum); color: #fff; }
@@ -233,7 +250,7 @@ body {
 .featured-section { margin-top: 5rem; padding-top: 3rem; border-top: 1px solid var(--border); max-width: 1200px; margin-left: auto; margin-right: auto; padding-left: 2rem; padding-right: 2rem; }
 .featured-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
 .section-label { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600; }
-.text-link { background: none; border: none; color: var(--plum); font-weight: 600; font-size: 0.9rem; cursor: pointer; font-family: 'Source Sans 3', sans-serif; text-decoration: none; }
+.text-link { background: none; border: none; color: var(--plum); font-weight: 600; font-size: 0.9rem; cursor: pointer; font-family: 'Inter', -apple-system, sans-serif; text-decoration: none; }
 .featured-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
 .featured-card, .portfolio-card {
   background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--card-radius);
@@ -344,7 +361,7 @@ body {
 .filter-btn {
   background: transparent; border: 1.5px solid var(--border); color: var(--text-secondary);
   padding: 0.45rem 1.1rem; border-radius: 20px; font-size: 0.82rem; cursor: pointer;
-  font-family: 'Source Sans 3', sans-serif; font-weight: 500; transition: all 0.25s;
+  font-family: 'Inter', -apple-system, sans-serif; font-weight: 500; transition: all 0.25s;
 }
 .filter-btn.active, .filter-btn:hover { background: var(--plum); color: #fff; border-color: var(--plum); }
 .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
@@ -391,7 +408,7 @@ body {
 }
 .form-input {
   width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border);
-  border-radius: 8px; font-family: 'Source Sans 3', sans-serif;
+  border-radius: 8px; font-family: 'Inter', -apple-system, sans-serif;
   font-size: 0.9rem; background: var(--bg); color: var(--text);
   transition: border 0.25s; outline: none;
 }
@@ -400,7 +417,7 @@ body {
 .btn-submit {
   background: var(--plum); color: #fff; border: none; padding: 0.85rem 2rem;
   border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Inter', -apple-system, sans-serif;
   transition: all 0.3s; align-self: flex-end;
 }
 .btn-submit:hover { opacity: 0.9; transform: translateY(-2px); }
@@ -490,6 +507,7 @@ body {
   .contact-grid { grid-template-columns: 1fr; }
   .edu-grid, .volunteer-grid { grid-template-columns: 1fr; }
   .section-heading { font-size: 2rem; }
+  .cursor-glow { display: none; }
 }
 
 @media (max-width: 640px) {
@@ -513,6 +531,11 @@ body {
 </head>
 
 <body>
+
+<!-- Scroll Progress -->
+<div class="scroll-progress" id="scrollProgress"></div>
+<!-- Cursor Glow -->
+<div class="cursor-glow" id="cursorGlow"></div>
 
 <!-- ══════════ LOADING SCREEN ══════════ -->
 <div class="loader-screen" id="loader">
@@ -541,7 +564,11 @@ body {
       <a class="nav-cta" href="#Contact">Let's Connect</a>
     </div>
     <div class="nav-actions">
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="themeIcon" style="width:18px;height:18px">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+      </button>
       <button class="hamburger" id="hamburger" aria-label="Menu">
         <span class="ham-line"></span>
         <span class="ham-line"></span>
@@ -566,11 +593,8 @@ body {
         </div>
       </div>
       <div class="reveal delay-6">
-        <div class="hero-socials">
-          <a href="#" class="social-icon" aria-label="LinkedIn">in</a>
-          <a href="#" class="social-icon" aria-label="Twitter">𝕏</a>
-          <a href="#" class="social-icon" aria-label="Medium">M</a>
-          <a href="#" class="social-icon" aria-label="Email">✉</a>
+        <div class="hero-socials" id="heroSocials">
+          <!-- Rendered by JS with SVG icons -->
         </div>
       </div>
     </div>
@@ -692,20 +716,17 @@ body {
     <div class="contact-grid">
       <div class="contact-info-col">
         <div class="reveal delay-2">
-          <div class="contact-item"><span class="ci-icon">✉</span><div><strong>Email</strong><p>ajayidorcas@gmail.com</p></div></div>
+          <div class="contact-item"><span class="ci-icon" style="padding:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;margin:auto"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4l-10 8L2 4"/></svg></span><div><strong>Email</strong><p>ajayidorcas@gmail.com</p></div></div>
         </div>
         <div class="reveal delay-3">
-          <div class="contact-item"><span class="ci-icon">📞</span><div><strong>Phone</strong><p>+234 816 123 4567</p></div></div>
+          <div class="contact-item"><span class="ci-icon" style="padding:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;margin:auto"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></span><div><strong>Phone</strong><p>+234 816 123 4567</p></div></div>
         </div>
         <div class="reveal delay-4">
-          <div class="contact-item"><span class="ci-icon">in</span><div><strong>LinkedIn</strong><p>linkedin.com/in/ajayidorcas</p></div></div>
+          <div class="contact-item"><span class="ci-icon" style="padding:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;margin:auto"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 6a2 2 0 100-4 2 2 0 000 4z"/></svg></span><div><strong>LinkedIn</strong><p>linkedin.com/in/ajayidorcas</p></div></div>
         </div>
         <div class="reveal delay-5">
-          <div class="hero-socials" style="margin-top:1.5rem">
-            <a href="#" class="social-icon">in</a>
-            <a href="#" class="social-icon">𝕏</a>
-            <a href="#" class="social-icon">M</a>
-            <a href="#" class="social-icon">✉</a>
+          <div class="hero-socials" id="contactSocials" style="margin-top:1.5rem">
+            <!-- Rendered by JS -->
           </div>
         </div>
       </div>
@@ -740,11 +761,8 @@ body {
       <strong>Dorcas Eniitan Ajayi</strong>
       <span>Writer • Journalist • Impact-driven Educator</span>
     </div>
-    <div class="footer-socials">
-      <a href="#" class="social-icon sm">in</a>
-      <a href="#" class="social-icon sm">𝕏</a>
-      <a href="#" class="social-icon sm">M</a>
-      <a href="#" class="social-icon sm">✉</a>
+    <div class="footer-socials" id="footerSocials">
+      <!-- Rendered by JS -->
     </div>
     <span class="footer-copy">© 2024 All Rights Reserved.</span>
   </div>
@@ -772,6 +790,59 @@ body {
 // ⚠️ REPLACE with your deployed Google Apps Script URL
 const APPS_SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_DEPLOYMENT_URL_HERE";
 
+/* ─── SVG ICON LIBRARY ─── */
+const SVG = {
+  linkedin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 6a2 2 0 100-4 2 2 0 000 4z"/></svg>',
+  twitter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l11.733 16h4.267l-11.733-16zM4 20l6.768-6.768M13.232 10.232L20 4"/></svg>',
+  medium: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="12" r="5"/><ellipse cx="16" cy="12" rx="2.5" ry="5"/><ellipse cx="22" cy="12" rx="1" ry="5"/></svg>',
+  mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4l-10 8L2 4"/></svg>',
+  arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
+  chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
+  pen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
+  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 19.5V5a2 2 0 012-2h14v14H6.5A2.5 2.5 0 004 19.5z"/></svg>',
+  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>',
+  brain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7zM9 21h6"/></svg>',
+  target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+  newspaper: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM4 8h16M8 4v4M8 12h4M8 16h4M14 12h2M14 16h2"/></svg>',
+  edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+  feather: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 00-8.49-8.49L5 10.5V19h8.5zM16 8L2 22M17.5 15H9"/></svg>',
+  chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>',
+  globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>',
+  share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>',
+  grad: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10l-10-5L2 10l10 5 10-5zM6 12v5c0 1.657 2.686 3 6 3s6-1.343 6-3v-5"/></svg>',
+};
+
+const SOCIALS = [
+  { name: "LinkedIn", icon: "linkedin", url: "#" },
+  { name: "Twitter", icon: "twitter", url: "#" },
+  { name: "Medium", icon: "medium", url: "#" },
+  { name: "Email", icon: "mail", url: "#" },
+];
+
+function renderSocials(containerId, small) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = SOCIALS.map(s =>
+    `<a href="${s.url}" class="social-icon${small ? ' sm' : ''}" aria-label="${s.name}" style="padding:0">${SVG[s.icon]}</a>`
+  ).join("");
+}
+
+/* ─── SCROLL PROGRESS ─── */
+window.addEventListener("scroll", function() {
+  var h = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById("scrollProgress").style.width = (window.scrollY / h * 100) + "%";
+  document.querySelector(".navbar").classList.toggle("scrolled", window.scrollY > 20);
+}, { passive: true });
+
+/* ─── CURSOR GLOW ─── */
+if (window.matchMedia("(pointer: fine)").matches) {
+  var glow = document.getElementById("cursorGlow");
+  document.addEventListener("mousemove", function(e) {
+    glow.style.left = e.clientX + "px";
+    glow.style.top = e.clientY + "px";
+  });
+}
+
 /* ─── DATA ─── */
 const PORTFOLIO_ITEMS = [
   { title: "Students' Union Election Coverage", category: "News Articles", desc: "In-depth coverage and fact-check of the 2022 OAU Students' Union election." },
@@ -792,21 +863,21 @@ const STATS = [
 ];
 
 const SKILLS = [
-  { name: "Excellent Communication", percent: 95, icon: "💬" },
-  { name: "Creative Writing", percent: 90, icon: "✍️" },
-  { name: "Brand Storytelling", percent: 90, icon: "📖" },
-  { name: "SEO / AEO", percent: 85, icon: "🔍" },
-  { name: "Critical Thinking", percent: 90, icon: "🧠" },
-  { name: "Problem Solving", percent: 85, icon: "🎯" },
+  { name: "Excellent Communication", percent: 95, icon: "chat" },
+  { name: "Creative Writing", percent: 90, icon: "pen" },
+  { name: "Brand Storytelling", percent: 90, icon: "book" },
+  { name: "SEO / AEO", percent: 85, icon: "search" },
+  { name: "Critical Thinking", percent: 90, icon: "brain" },
+  { name: "Problem Solving", percent: 85, icon: "target" },
 ];
 
 const WHAT_I_DO = [
-  { title: "News Writing", icon: "📰" },
-  { title: "Editing & Proofreading", icon: "✏️" },
-  { title: "Feature Writing", icon: "📝" },
-  { title: "Content Strategy", icon: "📊" },
-  { title: "Transcription & Translation", icon: "🌐" },
-  { title: "Social Media Management", icon: "📱" },
+  { title: "News Writing", icon: "newspaper" },
+  { title: "Editing & Proofreading", icon: "edit" },
+  { title: "Feature Writing", icon: "feather" },
+  { title: "Content Strategy", icon: "chart" },
+  { title: "Transcription & Translation", icon: "globe" },
+  { title: "Social Media Management", icon: "share" },
 ];
 
 const EXPERIENCE = [
@@ -839,7 +910,9 @@ const themeBtn = document.getElementById("themeToggle");
 themeBtn.addEventListener("click", () => {
   const isDark = document.documentElement.getAttribute("data-theme") === "dark";
   document.documentElement.setAttribute("data-theme", isDark ? "light" : "dark");
-  themeBtn.textContent = isDark ? "🌙" : "☀️";
+  document.getElementById("themeIcon").innerHTML = isDark
+    ? '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>'
+    : '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
 });
 
 /* ─── HAMBURGER ─── */
@@ -944,7 +1017,7 @@ function renderEducation() {
   document.getElementById("eduGrid").innerHTML = EDUCATION.map((ed, i) => `
     <div class="reveal delay-${i + 1}">
       <div class="edu-card">
-        <div class="edu-icon">🎓</div>
+        <div class="edu-icon" style="color:var(--plum)">${SVG.grad}</div>
         <h4 class="edu-school">${ed.school}</h4>
         <p class="edu-location">${ed.location}</p>
         <p class="edu-period">${ed.period}</p>
@@ -1021,7 +1094,7 @@ function renderSkills() {
   document.getElementById("skillBars").innerHTML = SKILLS.map((s, i) => `
     <div class="skill-bar-item" data-percent="${s.percent}" style="transition-delay: ${0.1 * i}s">
       <div class="skill-bar-header">
-        <span class="skill-icon">${s.icon}</span>
+        <span class="skill-icon" style="width:20px;height:20px;color:var(--plum);display:inline-flex">${SVG[s.icon]}</span>
         <span class="skill-name">${s.name}</span>
         <span class="skill-percent">${s.percent}%</span>
       </div>
@@ -1034,7 +1107,7 @@ function renderSkills() {
   document.getElementById("widGrid").innerHTML = WHAT_I_DO.map((w, i) => `
     <div class="reveal delay-${Math.min(i + 1, 6)}">
       <div class="wid-card">
-        <span class="wid-icon">${w.icon}</span>
+        <span class="wid-icon" style="width:32px;height:32px;color:var(--plum);display:inline-flex">${SVG[w.icon]}</span>
         <span class="wid-title">${w.title}</span>
       </div>
     </div>
@@ -1130,6 +1203,9 @@ function resetForm() {
 
 /* ─── INITIALIZE EVERYTHING ─── */
 function init() {
+  renderSocials("heroSocials", false);
+  renderSocials("contactSocials", false);
+  renderSocials("footerSocials", true);
   renderFeatured();
   renderStats();
   renderEducation();
